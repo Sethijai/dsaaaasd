@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text to Links Converter</title>
+    <style>
+        #links-container div {
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <textarea id="json-input" rows="10" cols="50" placeholder='Paste your JSON here'></textarea>
+    <br>
+    <button onclick="generateLinks()">Generate Links</button>
+    <div id="links-container"></div>
+
+    <script>
+        function escapeHTML(text) {
+            var map = {
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#039;'
+            };
+            return text.replace(/[&<>"']/g, function(m) { return map[m]; });
+        }
+
+        function generateLinks() {
+            try {
+                var jsonText = document.getElementById("json-input").value;
+                // Correcting the JSON structure with an object that has a property "notesDetails" which is an array.
+                var jsonData = JSON.parse('{"notesDetails": [' + jsonText + ']}');
+                var container = document.getElementById('links-container');
+                container.innerHTML = ''; // Clear any existing content
+
+                jsonData.notesDetails.sort((a, b) => a.notesno - b.notesno).forEach(function(note) {
+                    // Security: Escape HTML to prevent injection vulnerabilities
+                    var title = escapeHTML(note.docTitle).replace(' (Class Notes)', ' Class Notes');
+                    var url = escapeHTML(note.docUrl);
+
+                    // Correcting the syntax for setting HTML with a template literal using backticks
+                    var linkHTML = `<div class="link-item">
+                        ➳ ${title} by HACKHEIST @OPMASTERLECTURE: <a href="${url}" target="_blank">${url}</a>
+                    </div>`;
+
+                    container.insertAdjacentHTML('beforeend', linkHTML);
+                });
+            } catch (e) {
+                console.error("JSON error: ", e);
+                alert("There was an error processing your JSON. Please ensure it is correctly formatted.");
+            }
+        }
+    </script>
+</body>
+</html>
