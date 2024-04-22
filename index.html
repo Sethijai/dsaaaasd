@@ -6,7 +6,9 @@
     <textarea id="json-input" rows="10" cols="50" placeholder='Paste your JSON here'></textarea>
     <br>
     <button onclick="generateLinks()">Generate Links</button>
-    <div id="links-container" style="display: none;"></div> <textarea id="output-box" rows="10" cols="50" readonly></textarea>
+    <div id="links-container"></div>
+
+    <textarea id="output-box" rows="40" cols="50" readonly></textarea>
     <br>
     <button onclick="copyOutput()">Copy Links</button>
 
@@ -31,17 +33,18 @@
         }
 
         function generateLinks() {
-            var container = document.getElementById('links-container'); 
+            var container = document.getElementById('links-container'); // Add this line
             try {
                 var jsonText = document.getElementById("json-input").value;
                 var jsonData = JSON.parse('{"notesDetails": [' + jsonText + ']}');
-                container.innerHTML = ''; 
+                container.innerHTML = ''; // Clear any existing content
 
                 jsonData.notesDetails.sort((a, b) => a.notesno - b.notesno).forEach(function(note) {
                     var title = escapeHTML(note.docTitle).replace(' (Class Notes)', ' Class Notes');
                     var url = escapeHTML(note.docUrl);
 
-                    var linkHTML = `<div class="link-item">➳ ${title} by HACKHEIST @OPMASTERLECTURE: <a href="${url}" target="_blank">${url}</a>
+                    var linkHTML = `<div class="link-item">
+                        ➳ ${title} by HACKHEIST @OPMASTERLECTURE: <a href="${url}" target="_blank">${url}</a>
                     </div>`;
 
                     container.insertAdjacentHTML('beforeend', linkHTML);
@@ -49,7 +52,7 @@
 
                 // Update output box with generated links
                 var outputBox = document.getElementById("output-box");
-                outputBox.value = container.innerText; 
+                outputBox.value = container.innerText; // Get the text content of the links container
             } catch (e) {
                 console.error("JSON error: ", e);
                 alert("There was an error processing your JSON. Please ensure it is correctly formatted.");
